@@ -4,6 +4,10 @@ using System.Runtime.Serialization.Json;
 
 namespace cshite.Model
 {
+    /// <summary>
+    /// Our programs representation of the bank itself. Every operation will be persisted to the database*.
+    /// </summary>
+    /// <remarks>Data is stored using a series of JSON files. They're human readable, easily modified by hand, corruptable and have no ACID properties. Outside of a uni assignment this would be silly, but I'm just following the spec here.</remarks>
     public class Bank
     {
         public const int MinAccountID = 1000_0000;
@@ -16,6 +20,9 @@ namespace cshite.Model
             this.directory = directory;
         }
 
+        /// <summary>
+        /// Creates a new account
+        /// </summary>
         public Account CreateAccount(string firstname, string lastname, string address, string email, long phone)
         {
             var account = new Account
@@ -33,27 +40,28 @@ namespace cshite.Model
             return account;
         }
 
+        /// <summary>
+        /// Gets the next available ID for a user account
+        /// </summary>
         int GetNextId()
         {
-            var filenames = Directory.GetFiles(directory, "*.txt")
-                .Select(Path.GetFileNameWithoutExtension);
-
-            var max = MinAccountID;
-            foreach (var name in filenames)
-            {
-                if (int.TryParse(name, out var id) && id > max)
-                {
-                    max = id;
-                }
-            }
-
-            return max + 1;
+            return Directory.GetFiles(directory, "*.txt")
+                .Select(Path.GetFileNameWithoutExtension)
+                .Select(name => int.TryParse(name, out var id) ? id : MinAccountID)
+                .Append(MinAccountID) // If this is the first account to be created, the directory will be empty. This provides a default value
+                .Max() + 1;
         }
 
+        /// <summary>
+        /// Delete a user account
+        /// </summary>
         public void Delete(Account account)
             => File.Delete(GetFilePath(account));
 
-        public void Save(Account account)
+        /// <summary>
+        /// Save all changes for this account. Create/overwrite as needed.
+        /// </summary>
+        void Save(Account account)
         {
             if (!Directory.Exists(directory))
             {
@@ -67,14 +75,16 @@ namespace cshite.Model
             }
         }
 
+        /// <summary>
+        /// Load account with the given ID
+        /// </summary>
+        /// <returns>The account if found, otherwise null</returns>
         public Account Load(int id)
         {
-            var path = GetFilePath(id);
-            return File.Exists(path) ? Load(path) : null;
-        }
+            var file = GetFilePath(id);
+            if (!File.Exists(file))
+                return null;
 
-        Account Load(string file)
-        {
             var serialiser = new DataContractJsonSerializer(typeof(Account));
             using (var stream = File.OpenRead(file))
             {
@@ -82,6 +92,11 @@ namespace cshite.Model
             }
         }
 
+        /// <summary>
+        /// Perform a transaction on the provided account.
+        /// 
+        /// To remove money, provide a negative amount.
+        /// </summary>
         public void Transact(Account account, decimal amount)
         {
             account.Balance += amount;

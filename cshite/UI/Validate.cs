@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace cshite.UI
 {
     /// <summary>
-    /// Common validation methods for use with the ConsoleScreen's AddQuestion method
+    /// Common validation methods for use with the ConsoleScreen's AddInput method
     /// </summary>
     public static class Validate
     {
@@ -99,6 +99,9 @@ namespace cshite.UI
             };
         }
 
+        /// <summary>
+        /// For validating financial values
+        /// </summary>
         public static Validator<decimal> Money()
         {
             return response =>
@@ -122,6 +125,9 @@ namespace cshite.UI
             };
         }
 
+        /// <summary>
+        /// For a simple yes/no question where 'y' is true
+        /// </summary>
         public static Validator<bool> Bool()
         {
             return response => Regex.IsMatch(response, "^(y|n|yes|no)$", RegexOptions.IgnoreCase) ?

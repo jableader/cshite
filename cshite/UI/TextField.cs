@@ -9,12 +9,12 @@ namespace cshite.UI
     /// </summary>
     class TextField : DisplayField
     {
-        public TextField(string text, TextJustification positioning, ConsoleColor backgroundColour, ConsoleColor forgoundColour)
-            : base(text, positioning, backgroundColour, forgoundColour) { }
+        protected internal TextField(string text, TextJustification positioning, ConsoleColor backgroundColour, ConsoleColor forgoundColour)
+            : base(new Renderable { Text = text, Position = positioning, Background = backgroundColour, Forground = forgoundColour }) { }
 
         public override ResponseType ReadResponse(out string message)
         {
-            throw new InvalidOperationException("A text only region cannot respond");
+            throw new InvalidOperationException("A text only region cannot respond"); // Lets tell the developer when they've messed up
         }
     }
 }

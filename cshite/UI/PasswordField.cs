@@ -10,9 +10,9 @@ namespace cshite.UI
     {
         const char PasswordChar = '*';
 
-        protected override string DisplayResponse => new string(PasswordChar, Response?.Length ?? 0);
+        protected override string DisplayResponse => new string(PasswordChar, Response?.Length ?? 0); // Don't display the password, just '*'s
 
-        public PasswordField(string label, ConsoleColor background, ConsoleColor forground)
+        protected internal PasswordField(string label, ConsoleColor background, ConsoleColor forground)
             : base(label, Validate.AsString(), background, forground)
         {
         }
@@ -41,6 +41,9 @@ namespace cshite.UI
             return password.ToString();
         }
 
+        /// <summary>
+        /// Helper method for what characters we would like to be valid for a password so we don't accidently add things like control characters
+        /// </summary>
         bool IsValidPasschar(char c)
             => char.IsLetterOrDigit(c) || char.IsPunctuation(c) || char.IsWhiteSpace(c);
     }

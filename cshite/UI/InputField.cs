@@ -23,14 +23,13 @@ namespace cshite.UI
         int top, left;
 
         public override bool AcceptsInput => !response.IsValid; // Don't accept input when the user has already responded
-        protected override IEnumerable<Renderable> Pieces => new [] { new Renderable { text = prompt + DisplayResponse, background = background, forground = forground } }; // Include the response in the text so they are rendered together
+        protected override IEnumerable<Renderable> Pieces => new [] { new Renderable { Text = prompt + DisplayResponse, Background = background, Forground = forground } }; // Include the response in the text so they are rendered together
         protected virtual string DisplayResponse => response.IsValid ? Response.ToString() : string.Empty; // The text to display for the users response
 
-        public InputField(string prompt, Validator<T> parseResult, ConsoleColor background, ConsoleColor forground)
-            : base()
+        protected internal InputField(string prompt, Validator<T> validate, ConsoleColor background, ConsoleColor forground)
         {
             this.prompt = prompt;
-            this.validate = parseResult;
+            this.validate = validate;
             this.forground = forground;
             this.background = background;
         }
@@ -46,7 +45,9 @@ namespace cshite.UI
             return response.Type;
         }
 
-
+        /// <summary>
+        /// Override the console text to keep track of where the user input should be
+        /// </summary>
         protected override void DrawConsoleText(string s)
         {
             base.DrawConsoleText(s);
@@ -55,6 +56,9 @@ namespace cshite.UI
             left = Console.CursorLeft;
         }
 
+        /// <summary>
+        /// Reads the response from the user
+        /// </summary>
         protected virtual string ReadLine()
             => Console.ReadLine();
     }

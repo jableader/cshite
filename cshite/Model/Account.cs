@@ -3,6 +3,11 @@ using System.Runtime.Serialization;
 
 namespace cshite.Model
 {
+    /// <summary>
+    /// A plain ol data object for representing a user's account.
+    /// 
+    /// By limiting functionality available on the account directly, we can force all operations to go through the bank.
+    /// </summary>
     [DataContract]
     public class Account
     {
@@ -22,7 +27,7 @@ namespace cshite.Model
         public string Email { get; internal set; }
 
         [DataMember]
-        public long Phone { get; internal set; }
+        public long Phone { get; internal set; } // Usually phone numbers would be stored as strings to not lose any leading zeros, but the spec demands a number
 
         [DataMember]
         public decimal Balance { get; internal set; }

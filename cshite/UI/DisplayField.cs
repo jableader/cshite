@@ -20,15 +20,13 @@ namespace cshite.UI
         /// </summary>
         public virtual bool AcceptsInput => false;
 
+        /// <summary>
+        /// The renderable pieces for this display field.
+        /// </summary>
         protected virtual IEnumerable<Renderable> Pieces { get; }
 
-        public DisplayField(params Renderable[] pieces)
+        protected internal DisplayField(params Renderable[] pieces)
             => Pieces = pieces;
-
-        protected DisplayField(string text, TextJustification positioning = TextJustification.Left, ConsoleColor? backgroundColour = null, ConsoleColor? forgoundColour = null)
-            : this (new Renderable { text = text, position = positioning, background = backgroundColour, forground = forgoundColour })
-        {
-        }
 
         /// <summary>
         /// Reads the response from the user and performs any validation
@@ -41,11 +39,14 @@ namespace cshite.UI
             return ResponseType.Valid;
         }
 
+        /// <summary>
+        /// Render this displayfield, providing default values for some fields.
+        /// </summary>
         public void Draw(Renderable console)
         {
             foreach (var piece in Pieces)
             {
-                var longestLine = Console.WindowWidth - (2 * (piece.border ?? console.border).Length);
+                var longestLine = Console.WindowWidth - (2 * (piece.Border ?? console.Border).Length);
                 var pieceText = ProcessPattern(piece, longestLine);
 
                 foreach (var line in WrapTextIntoLines(pieceText, longestLine))
@@ -55,6 +56,9 @@ namespace cshite.UI
             }
         }
 
+        /// <summary>
+        /// Wraps the provided text into substrings of length less than or equal to the provided length
+        /// </summary>
         IEnumerable<string> WrapTextIntoLines(string text, int length)
         {
             foreach (var line in text.Split(Environment.NewLine))
@@ -73,10 +77,13 @@ namespace cshite.UI
             }
         }
 
+        /// <summary>
+        /// Prints a single line to the console, with borders and padding
+        /// </summary>
         void PrintLine(string line, int longestLine, Renderable piece, Renderable console)
         {
             int rightPadding, leftPadding;
-            if (piece.position == TextJustification.Left)
+            if (piece.Position == TextJustification.Left)
             {
                 leftPadding = 0;
                 rightPadding = longestLine - line.Length;
@@ -88,33 +95,48 @@ namespace cshite.UI
                 rightPadding = (totalPadding / 2) + (totalPadding % 2); // When the text is odd, the right padding will need 1 extra cell to center align
             }
 
-            SetColors(console.forground.Value, console.background.Value);
-            Console.Write(piece.border ?? console.border);
+            SetColors(console.Background.Value, console.Forground.Value);
+            Console.Write(piece.Border ?? console.Border);
             Console.Write(new string(' ', leftPadding));
 
-            SetColors(piece.forground ?? console.forground.Value, piece.background ?? console.background.Value);
+            SetColors(piece.Background ?? console.Background.Value, piece.Forground ?? console.Forground.Value);
             DrawConsoleText(line);
 
-            SetColors(console.forground.Value, console.background.Value);
+            SetColors(console.Background.Value, console.Forground.Value);
             Console.Write(new string(' ', rightPadding));
-            Console.WriteLine(Reverse(piece.border ?? console.border));
+            Console.WriteLine(Reverse(piece.Border ?? console.Border));
         }
 
+        /// <summary>
+        /// Puts a Renderable's text value to the console
+        /// </summary>
         protected virtual void DrawConsoleText(string s)
             => Console.Write(s);
 
+        /// <summary>
+        /// Reverse string s, such that "xyz" becomes "zyx"
+        /// </summary>
         static string Reverse(string s)
             => string.Join(string.Empty, s.Reverse());
 
+        /// <summary>
+        /// Converts a renderable into its textual representation
+        /// </summary>
         static string ProcessPattern(Renderable grouping, int longestLine)
-            => grouping.repeat ? RepeatPattern(grouping.text, longestLine) : grouping.text;
+            => grouping.Repeat ? RepeatPattern(grouping.Text, longestLine) : grouping.Text;
 
+        /// <summary>
+        /// Convert repeating patterns into their full-length line of text, handling newlines
+        /// </summary>
         static string RepeatPattern(string patternToRepeat, int length)
             => patternToRepeat.Split("\r\n")
                 .Select(subpattern => Repeat(subpattern, length))
                 .Aggregate(new StringBuilder(), (builder, line) => builder.AppendLine(line))
                 .ToString();
 
+        /// <summary>
+        /// Repeats a string until the desired length is reached
+        /// </summary>
         static string Repeat(string subpattern, int length)
         {
             if (string.IsNullOrEmpty(subpattern))
@@ -124,10 +146,10 @@ namespace cshite.UI
             while (line.Length < length)
                 line.Append(subpattern);
 
-            return line.ToString(0, length);
+            return line.ToString(0, length); // Handles the case where the subpattern doesn't perfectly divide into the console width by truncating the RHS
         }
 
-        public static void SetColors(ConsoleColor foreground, ConsoleColor background)
+        protected static void SetColors(ConsoleColor background, ConsoleColor foreground)
         {
             Console.ForegroundColor = foreground;
             Console.BackgroundColor = background;

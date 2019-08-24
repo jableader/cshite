@@ -12,19 +12,19 @@ namespace cshite.UI
         readonly List<DisplayField> regions = new List<DisplayField>(); // The areas in this screen to render
         readonly ConsoleColor backgroundColor, foregroundColor; // The forground & background colors for headings & borders
 
-        public ConsoleScreen(ConsoleColor backgroundColor = ConsoleColor.Black, ConsoleColor forgroundColor = ConsoleColor.Green, IEnumerable<Renderable> header = null)
+        public ConsoleScreen(IEnumerable<Renderable> header = null, ConsoleColor backgroundColor = ConsoleColor.Black, ConsoleColor forgroundColor = ConsoleColor.Green)
         {
             this.backgroundColor = backgroundColor;
             this.foregroundColor = forgroundColor;
 
             if (header != null)
             {
-                Add(new DisplayField(header.ToArray()));
+                Add(header.ToArray());
             }
         }
 
         public ConsoleScreen(string header = null, ConsoleColor backgroundColor = ConsoleColor.Black, ConsoleColor forgroundColor = ConsoleColor.Green)
-            : this(backgroundColor, forgroundColor, header == null ? null : Art.AsHeader(header))
+            : this(header == null ? null : Art.AsHeader(header), backgroundColor, forgroundColor)
         {
         }
 
@@ -65,9 +65,18 @@ namespace cshite.UI
         /// Add a simple blank line for formatting
         /// </summary>
         public void AddBlankLines(int numberOfLines = 1)
-            => AddArt(Art.BlankLines(numberOfLines));
+            => Add(Art.BlankLines(numberOfLines));
 
-        public void AddArt(params Renderable[] art)
+        /// <summary>
+        /// Add a seperator
+        /// </summary>
+        public void AddSeperator(string pattern)
+            => Add(new Renderable { Text = pattern, Repeat = true });
+
+        /// <summary>
+        /// Add arbitrary renderables
+        /// </summary>
+        void Add(params Renderable[] art)
             => Add(new DisplayField(art));
 
         T[] Add<T>(params T[] items) where T : DisplayField
@@ -78,9 +87,8 @@ namespace cshite.UI
 
         /// <summary>
         /// Show the screen you have just built. Blocks until all questions have been filled.
-        /// 
-        /// If your screen does not have any fields which accept input this will return immediatly
         /// </summary>
+        /// <returns>True once the user has filled all inputs with a valid response</returns>
         public bool Show()
         {
             for (var activeQuestion = GetNextInput(); activeQuestion != null; activeQuestion = GetNextInput()) // Display each question until they have all been answered
@@ -89,10 +97,10 @@ namespace cshite.UI
 
                 switch (activeQuestion.ReadResponse(out var message))
                 {
-                    case ResponseType.Cancel:
+                    case ResponseType.Cancel: // User is sick of this screen and wants to cancel their operation
                         return false;
 
-                    case ResponseType.Retry:
+                    case ResponseType.Retry: // User entered an invalid response and we'd like to give them another crack at it
                         if (!string.IsNullOrEmpty(message))
                         {
                             ShowError("Error", message);
@@ -113,10 +121,13 @@ namespace cshite.UI
 
         readonly DisplayField top = new DisplayField(Art.Top()), bottom = new DisplayField(Art.Bottom());
 
+        /// <summary>
+        /// Draw this screen by creating borders and asking all DisplayFields to render themselves
+        /// </summary>
         void Render()
         {
             Console.Clear();
-            var background = new Renderable { background = this.backgroundColor, forground = this.foregroundColor, border = "| " };
+            var background = new Renderable { Background = this.backgroundColor, Forground = this.foregroundColor, Border = "| " };
 
             top.Draw(background);
             foreach (var line in regions)
@@ -149,7 +160,7 @@ namespace cshite.UI
         }
 
         /// <summary>
-        /// Ask the user for confirmation. Requires them to type 'y' or 'n'.
+        /// Ask the user for a yes/no confirmation
         /// </summary>
         /// <returns>Returns true when the user selected 'yes'</returns>
         public static bool ShowConfirmation(string header, string message, string question = "Would you like to proceed (y/n): ", ConsoleColor background = ConsoleColor.Black, ConsoleColor forground = ConsoleColor.Yellow)
