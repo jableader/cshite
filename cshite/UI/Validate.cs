@@ -123,8 +123,8 @@ namespace cshite.UI
 
         public static Validator<bool> Bool()
         {
-            return response => Regex.IsMatch(response, "^[ynYN]$") ?
-                Validated<bool>.Success(response.Equals("y", StringComparison.OrdinalIgnoreCase)) :
+            return response => Regex.IsMatch(response, "^(y|n|yes|no)$", RegexOptions.IgnoreCase) ?
+                Validated<bool>.Success(response.StartsWith("y", StringComparison.OrdinalIgnoreCase)) :
                 Validated<bool>.Error("Please enter 'y' or 'n'.");
         }
     }
