@@ -108,7 +108,7 @@ namespace cshite
             screen.AddText("Enter the details", TextJustification.Center);
 
             var account = screen.AddInput("Account Number: ", Validate.AsAccount(bank));
-            var deposit = screen.AddInput("Amount: $", Validate.Money(() => decimal.MaxValue - account.Response.Balance));
+            var deposit = screen.AddInput("Amount: $", Validate.Money());
 
             if (screen.Show())
             {
