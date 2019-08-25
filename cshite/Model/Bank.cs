@@ -12,6 +12,7 @@ namespace cshite.Model
     {
         public const int MinAccountID = 1000_0000;
         public const int MaxAccountID = 9999_9999;
+        public const decimal MaxAccountBalance = 103_500_000_000; // Bill Gate's net worth, an upper limit on how much money we can process (handy way to avoid overflow!)
 
         readonly string directory;
 

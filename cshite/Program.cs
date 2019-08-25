@@ -115,8 +115,15 @@ namespace cshite
 
             if (screen.Show())
             {
-                bank.Transact(account.Response, deposit.Response);
-                ShowSuccess(account.Response);
+                if ((account.Response.Balance + deposit.Response) <= Bank.MaxAccountBalance)
+                {
+                    bank.Transact(account.Response, deposit.Response);
+                    ShowSuccess(account.Response);
+                }
+                else
+                {
+                    ConsoleScreen.ShowError("Balance too high", "Sorry, our insurance provider will not allow us to store that much money for one individual. We recommend purchasing a vault from one of our competitors.");
+                }
             }
         }
 

@@ -10,7 +10,6 @@ namespace cshite.UI
     /// </summary>
     public static class Validate
     {
-        const decimal BillGatesNetWorth = 103_500_000_000;
         readonly static string[] recognisedDomains = new[] { "outlook.com", "gmail.com", "uts.edu.au", "student.uts.edu.au" };
 
         /// <summary>
@@ -111,7 +110,7 @@ namespace cshite.UI
                     return Validated<decimal>.Error("Please enter a valid, positive number.");
                 }
 
-                if (amount > BillGatesNetWorth) // Provide an upper limit on how much money we can process (handy way to avoid overflow!)
+                if (amount > Bank.MaxAccountBalance) 
                 {
                     return Validated<decimal>.Error("Wow, that's a lot of money. Sorry, we can't process that transaction.");
                 }
