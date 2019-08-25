@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace cshite.UI
 {
     /// <summary>
-    /// Common validation methods for use with the ConsoleScreen's AddInput method
+    /// Validation methods for use with the ConsoleScreen's AddInput method
     /// </summary>
     public static class Validate
     {
@@ -59,7 +59,7 @@ namespace cshite.UI
         /// <summary>
         /// Validate any string within the length provided
         /// </summary>
-        public static Validator<string> AsString(int minlength = 0, int maxlength = int.MaxValue)
+        public static Validator<string> AsString(int minlength = 0, int maxlength = 1_000)
         {
             return response =>
                 response.Length >= minlength && response.Length <= maxlength ?
@@ -135,27 +135,4 @@ namespace cshite.UI
                 Validated<bool>.Error("Please enter 'y' or 'n'.");
         }
     }
-
-    /// <summary>
-    /// The result type for any validation attempt
-    /// </summary>
-    /// <typeparam name="T">The type of result expected</typeparam>
-    public struct Validated<T>
-    {
-        public T Value { get; private set; }
-        public string ErrorMessage { get; private set; }
-        public bool IsValid => Type == ResponseType.Valid;
-        public ResponseType Type { get; private set; }
-
-        public static Validated<T> Error(string message = null)
-            => new Validated<T> { Type = ResponseType.Retry, ErrorMessage = message };
-
-        public static Validated<T> Success(T result)
-            => new Validated<T> { Type = ResponseType.Valid, Value = result };
-
-        public static Validated<T> Cancel()
-            => new Validated<T> { Type = ResponseType.Cancel };
-    }
-
-    public delegate Validated<T> Validator<T>(string response);
 }

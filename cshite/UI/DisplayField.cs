@@ -29,14 +29,13 @@ namespace cshite.UI
             => Pieces = pieces;
 
         /// <summary>
-        /// Reads the response from the user and performs any validation
+        /// Override this method to read the response from the user and performs any validation
         /// </summary>
         /// <param name="message">The message to display to the user for a validation failure. Use null for no message.</param>
         /// <returns>Returns true when the user input was successfully accepted</returns>
         public virtual ResponseType ReadResponse(out string message)
         {
-            message = null;
-            return ResponseType.Valid;
+            throw new InvalidOperationException("A text only region cannot respond"); // Lets tell the developer when they've messed up
         }
 
         /// <summary>
