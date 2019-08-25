@@ -2,9 +2,15 @@
 ## General design guidelines
 ### Architecture
 I have seperated out three main pieces of functionality
-    + Display & Validation: Handled by the classes within the UI folder. These classes should be loosly coupled to the banking application and should be reusable for any UI-heavy console app.
-    + Banking operations: Handled by the classes within the Model folder. These classes need not know they're a console application and should be usable from a Winforms or Webserver app.
-    + Implementation specific: Handled by the Program class. This uses the APIs provided to actually implement the desired functionality. This is happy to know it's banking console app.
+
+#### Display & Validation
+Handled by the classes within the UI folder. These classes should be loosly coupled to the banking application and should be reusable for any UI-heavy console app.
+
+#### Banking operations
+Handled by the classes within the Model folder. These classes need not know they're a console application and should be usable from a Winforms or Webserver app.
+
+#### Implementation specific
+Handled by the Program class. This uses the APIs provided to actually implement the desired functionality. This is happy to know it's banking console app.
 
 ### State
 State is a necessary evil. Each 'unit' of state a class exposes exponentially increases the complexity of the class (since you have increased the number of potential data configurations).
