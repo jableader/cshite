@@ -45,7 +45,7 @@ namespace cshite.UI
         {
             foreach (var piece in Pieces)
             {
-                var longestLine = Console.WindowWidth - (2 * (piece.Border ?? console.Border).Length);
+                var longestLine = Console.WindowWidth - (2 * (piece.Border ?? console.Border).Length) - 2;
                 var pieceText = ProcessPattern(piece, longestLine);
 
                 foreach (var line in WrapTextIntoLines(pieceText, longestLine))

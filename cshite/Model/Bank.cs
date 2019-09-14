@@ -19,6 +19,11 @@ namespace cshite.Model
         public Bank(string directory)
         {
             this.directory = directory;
+
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
         }
 
         /// <summary>
@@ -45,13 +50,11 @@ namespace cshite.Model
         /// Gets the next available ID for a user account
         /// </summary>
         int GetNextId()
-        {
-            return Directory.GetFiles(directory, "*.txt")
+            => Directory.GetFiles(directory, "*.txt")
                 .Select(Path.GetFileNameWithoutExtension)
                 .Select(name => int.TryParse(name, out var id) ? id : MinAccountID)
                 .Append(MinAccountID) // If this is the first account to be created, the directory will be empty. This provides a default value
                 .Max() + 1;
-        }
 
         /// <summary>
         /// Delete a user account
@@ -64,11 +67,6 @@ namespace cshite.Model
         /// </summary>
         void Save(Account account)
         {
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
             var serialiser = new DataContractJsonSerializer(typeof(Account));
             using (var stream = File.OpenWrite(GetFilePath(account)))
             {

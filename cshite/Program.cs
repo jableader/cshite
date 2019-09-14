@@ -26,14 +26,14 @@ namespace cshite
         {
             while (true)
             {
-                var c = new ConsoleScreen(Art.AsHeader(Title, Art.BitCoin));
-                c.AddText("Login to start");
-                c.AddBlankLines();
+                var screen = new ConsoleScreen(Art.AsHeader(Title, Art.BitCoin));
+                screen.AddText("Login to start");
+                screen.AddBlankLines();
 
-                var username = c.AddInput("User name: ", Validate.AsString());
-                var password = c.AddPassword("Password: ");
+                var username = screen.AddInput("User name: ", Validate.AsString());
+                var password = screen.AddPassword("Password: ");
 
-                if (c.Show() && IsValidLoginAccount(username.Response, password.Response))
+                if (screen.Show() && IsValidLoginAccount(username.Response, password.Response))
                 {
                     return;
                 }
@@ -43,7 +43,7 @@ namespace cshite
         }
 
         static bool IsValidLoginAccount(string name, string pw)
-            => File.ReadLines("login.txt").Contains(name + ", " + pw); // No salts & hashes here
+            => File.ReadLines("login.txt").Contains(name + "|" + pw); // No salts & hashes here
 
         static void WelcomeScreen()
         {
@@ -173,6 +173,7 @@ namespace cshite
                 var shouldEmail = screen.AddInput($"Email to {account.Response.Email} (y/n)?", Validate.Bool(), ConsoleColor.Green, ConsoleColor.Black);
                 if (screen.Show() && shouldEmail.Response)
                 {
+                    // No email functionality
                 }
             }
         }

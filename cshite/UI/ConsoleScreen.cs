@@ -126,9 +126,11 @@ namespace cshite.UI
         /// </summary>
         void Render()
         {
+            Console.BackgroundColor = backgroundColor;
+            Console.ForegroundColor = foregroundColor;
             Console.Clear();
-            var background = new Renderable { Background = this.backgroundColor, Forground = this.foregroundColor, Border = "| " };
 
+            var background = new Renderable { Background = this.backgroundColor, Forground = this.foregroundColor, Border = "| " };
             top.Draw(background);
             foreach (var line in regions)
             {
