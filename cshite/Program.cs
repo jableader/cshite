@@ -43,7 +43,16 @@ namespace cshite
         }
 
         static bool IsValidLoginAccount(string name, string pw)
-            => File.ReadLines("login.txt").Contains(name + "|" + pw); // No salts & hashes here
+        {
+            const string loginFile = "login.txt";
+            if (!File.Exists(loginFile))
+            {
+                ConsoleScreen.ShowError("Bad Config", "login.txt file could not be found. Please place into the program directory.");
+                Environment.Exit(-1);
+            }
+
+            return File.ReadLines(loginFile).Contains(name + "|" + pw); // No salts & hashes here
+        }
 
         static void WelcomeScreen()
         {
