@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Json;
 
 namespace cshite.Model
 {
@@ -66,13 +65,7 @@ namespace cshite.Model
         /// Save all changes for this account. Create/overwrite as needed.
         /// </summary>
         void Save(Account account)
-        {
-            var serialiser = new DataContractJsonSerializer(typeof(Account));
-            using (var stream = File.OpenWrite(GetFilePath(account)))
-            {
-                serialiser.WriteObject(stream, account);
-            }
-        }
+            => File.WriteAllText(GetFilePath(account), account.Serialise());
 
         /// <summary>
         /// Load account with the given ID
@@ -80,15 +73,11 @@ namespace cshite.Model
         /// <returns>The account if found, otherwise null</returns>
         public Account Load(int id)
         {
-            var file = GetFilePath(id);
-            if (!File.Exists(file))
+            var path = GetFilePath(id);
+            if (!File.Exists(path))
                 return null;
 
-            var serialiser = new DataContractJsonSerializer(typeof(Account));
-            using (var stream = File.OpenRead(file))
-            {
-                return (Account)serialiser.ReadObject(stream);
-            }
+            return Account.Deserialise(File.ReadAllText(path));
         }
 
         /// <summary>

@@ -60,7 +60,7 @@ namespace cshite.UI
         /// </summary>
         IEnumerable<string> WrapTextIntoLines(string text, int length)
         {
-            foreach (var line in text.Split(Environment.NewLine))
+            foreach (var line in text.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
                 var remaining = line;
                 while (remaining.Length > length)
@@ -128,7 +128,7 @@ namespace cshite.UI
         /// Convert repeating patterns into their full-length line of text, handling newlines
         /// </summary>
         static string RepeatPattern(string patternToRepeat, int length)
-            => patternToRepeat.Split("\r\n")
+            => patternToRepeat.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                 .Select(subpattern => Repeat(subpattern, length))
                 .Aggregate(new StringBuilder(), (builder, line) => builder.AppendLine(line))
                 .ToString();
